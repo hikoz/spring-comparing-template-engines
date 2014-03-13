@@ -2,48 +2,32 @@
 
 This is a demo project to show the differences among several Java template engines in combination with Spring MVC. Template engines used in this project are:
 
-* JSP + JSTL - v1.2
-* [Freemarker](http://www.freemarker.org) - v2.3.19
-* [Velocity](http://velocity.apache.org) - v1.7
-* [Thymeleaf](http://www.thymeleaf.org/) - v2.1.0.RELEASE
-* Mustache - Based on [JMustache](https://github.com/samskivert/jmustache) - v1.8
-* [Scalate](http://scalate.fusesource.org)  - v1.6.1
-* [Jade](https://github.com/neuland/jade4j) - v0.3.17
-* [Rythm](http://rythmengine.org/) - v1.4.0
-* [HTTL](http://httl.github.io/en/) - v1.0.11
+* [Freemarker](http://www.freemarker.org) - 2.3.20
+* [Velocity](http://velocity.apache.org) - 1.7
+* [Thymeleaf](http://www.thymeleaf.org/) - 2.1.2.RELEASE
+* Mustache - Based on [JMustache](https://github.com/samskivert/jmustache) - 1.8
+* [Jade](https://github.com/neuland/jade4j) - 0.4.0
+* [Rythm](http://rythmengine.org/) - 1.0
+* [HTTL](http://httl.github.io/en/) - 1.0.11
+* [Handlebars](https://github.com/jknack/handlebars.java) - 1.3.0
+* -- JSP + JSTL - v1.2 --
+* -- [Scalate](http://scalate.fusesource.org)  - 1.6.1 --
 
 
 ## Build and run
 You need Java 7 and Maven 3 to build and run this project.
-Build the project with
-    
-    mvn package
+TODO mvn package to create executable jar.
+TODO use custom base name of messagesource
+TODO i18n for jade
+TODO fix NPE in Scalate
+TODO how to compile jasper in Java Application
 
-Run the project with
-
-    mvn tomcat7:run
-
-See the demo URLs:
-
-  - http://localhost:8080/jsp
-  - http://localhost:8080/freemarker
-  - http://localhost:8080/velocity
-  - http://localhost:8080/thymeleaf
-  - http://localhost:8080/jade
-  - http://localhost:8080/scalate
-  - http://localhost:8080/mustache
-  - http://localhost:8080/rythm
-  
 ## Benchmarking
 
-In case you want to benchmark the different template engines I would recommend using Apache HTTP server benchmarking tool or Siege an HTTP/HTTPS stress tester.
-
-    $ ab -n 10000 -c 10 http://localhost:8080/jsp
-    $ ab -n 10000 -c 10 http://localhost:8080/velocity
-    $ ab -n 10000 -c 10 http://localhost:8080/freemarker
-    $ ab -n 10000 -c 10 http://localhost:8080/thymeleaf
-    $ ab -n 10000 -c 10 http://localhost:8080/mustache
-    $ ab -n 10000 -c 10 http://localhost:8080/jade
+TODO measure rendering time.
+TODO warmup
+TODO pretty print
+TODO use good benchmark library if exists
 
 On my local machine with the following specs I did some benchmarks.
 
@@ -69,27 +53,5 @@ Mustache (JMustache)	8.8148 seconds
 Freemarker				8.5574 seconds
 Velocity				8.5052 seconds
 JSP						8.8278 seconds
-						
+
 ```
-
-###How were the results measured?
-
-Before the performance of each template engines was measured, there were at least 2 dry runs with the exact same settings, to make sure that initialization of the engines, warm up of the JVM and additional caches have taken place. There were at least 5 iterations of the same benchmark before calculating the average time it took.
-
-###For Mac OSX users
-
-Mac OS X has only 16K ports available that won't be released until socket
-TIME_WAIT is passed. The default timeout for TIME_WAIT is 15 seconds.
-Consider reducing in case of available port bottleneck.
-
-You can check whether this is a problem with netstat:
-
-    # sysctl net.inet.tcp.msl
-    net.inet.tcp.msl: 15000
-
-Now if you want to change this you can do so by doing:
-
-    # sudo sysctl -w net.inet.tcp.msl=1000
-    net.inet.tcp.msl: 15000 -> 1000
-
-In case you see an improvement to the benchmark or know about ways to improve the results, please file an issue and send a pull request.
