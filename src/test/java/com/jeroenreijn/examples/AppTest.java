@@ -6,19 +6,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -33,84 +34,79 @@ public class AppTest {
 
   @Autowired
   private WebApplicationContext wac;
-  @Autowired
-  MessageSource message;
 
-  private int count = 1000;
+  private LinkedHashMap<String, Long> counters;
 
   @Before
   public void setup() {
     mockMvc = webAppContextSetup(wac).build();
   }
-  @After
-  public void after() {
-    System.gc();
-  }
 
   @Test
-  public void handlebars() throws Exception {
+  public void benchmark() throws Exception {
+    counters = new LinkedHashMap<String, Long>();
     run("handlebars");
-  }
-
-  @Test
-  public void rythm() throws Exception {
     run("rythm");
-  }
-
-  @Test
-  public void thymeleaf() throws Exception {
     run("thymeleaf");
-  }
-
-  @Test
-  public void mustache() throws Exception {
     run("mustache");
-  }
-
-  @Test
-  public void httl() throws Exception {
     run("httl");
-  }
-
-  @Test
-  public void velocity() throws Exception {
     run("velocity");
-  }
-
-  @Test
-  public void freemarker() throws Exception {
     run("freemarker");
+    run("jade");
+    System.out.println(counters);
   }
 
-  @Test
-  public void jade() throws Exception {
-    run("jade");
-  }
+  int threads = 10;
 
   private void run(final String name) throws Exception {
-    int threads = 10;
-    ExecutorService pool = Executors.newFixedThreadPool(threads);
-
-    List<Future<Void>> l = new ArrayList<Future<Void>>();
-    for (int i = 0; i < count; ++i) {
-      l.add(pool.submit(new Callable<Void>() {
-        public Void call() throws Exception {
+    final AtomicBoolean running = new AtomicBoolean(true);
+    Callable<Long> c = new Callable<Long>() {
+      public Long call() throws Exception {
+        long count = 0L;
+        while (running.get()) {
           String expected = "<h3 class=\"panel-title\">Shootout! Template engines on the JVM - Jeroen Reijn</h3>";
-          mockMvc.perform(get("/" + name))
-          .andExpect(header().string("Content-Type", "text/html;charset=UTF-8"))
+          mockMvc
+              .perform(get("/" + name))
+              .andExpect(
+                  header().string("Content-Type", "text/html;charset=UTF-8"))
               .andExpect(status().isOk())
               .andExpect(content().string(containsString("<h1>こんにちは")))
               .andExpect(content().string(containsString(expected)));
-          return null;
+          count++;
         }
-      }));
+        return count;
+      }
+    };
+    System.out.println("warmup:" + name);
+    counter(running, c, 2);
+    System.out.println("start:" + name);
+    long sum = counter(running, c, 5);
+    System.out.println("stop :" + name);
+    counters.put(name, sum);
+  }
+
+  private long counter(final AtomicBoolean running,
+      Callable<Long> c, int sec) throws Exception {
+    ExecutorService pool = Executors.newFixedThreadPool(threads);
+    running.set(true);
+    List<Future<Long>> l = new ArrayList<Future<Long>>();
+    for (int i = 0; i < threads; ++i) {
+      l.add(pool.submit(c));
     }
     pool.shutdown();
-    pool.awaitTermination(10, TimeUnit.SECONDS);
-
-    for (Future<Void> f : l) {
-      f.get();
+    Thread.sleep(sec * 1000L);
+    running.set(false);
+    pool.awaitTermination(1, TimeUnit.SECONDS);
+    long sum = 0L;
+    try {
+      for (Future<Long> f : l) {
+        sum += f.get();
+      }
+    } catch (ExecutionException e) {
+      System.out.println(e);
     }
+    System.gc();
+    return sum;
   }
 
 }
