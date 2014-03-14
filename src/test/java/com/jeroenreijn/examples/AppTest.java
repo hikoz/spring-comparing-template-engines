@@ -50,7 +50,7 @@ public class AppTest {
     run("thymeleaf");
     run("mustache");
     run("jmustache");
-    run("httl");
+    // run("httl");
     run("velocity");
     run("freemarker");
     run("jade");
