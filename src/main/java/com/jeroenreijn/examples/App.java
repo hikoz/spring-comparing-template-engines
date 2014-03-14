@@ -2,14 +2,7 @@ package com.jeroenreijn.examples;
 
 import httl.web.springmvc.HttlViewResolver;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.fusesource.scalate.spring.view.ScalateViewResolver;
 import org.rythmengine.spring.web.RythmConfigurer;
@@ -19,13 +12,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
-import org.springframework.web.servlet.view.mustache.MustacheTemplateLoader;
-import org.springframework.web.servlet.view.mustache.MustacheView;
-import org.springframework.web.servlet.view.mustache.MustacheViewResolver;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
 import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 import org.thymeleaf.spring3.SpringTemplateEngine;
@@ -36,8 +25,8 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.cache.HighConcurrencyTemplateCache;
 import com.github.jknack.handlebars.io.URLTemplateLoader;
 import com.github.jknack.handlebars.springmvc.HandlebarsViewResolver;
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Template;
+import com.jeroenreijn.examples.viewresolvers.JmustacheViewResolver;
+import com.jeroenreijn.examples.viewresolvers.MustacheJavaViewResolver;
 
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.spring.template.SpringTemplateLoader;
@@ -72,54 +61,24 @@ public class App {
     return r;
   }
 
-  // TODO add i18n to model without creating sub class of View
-  public static class MustacheSubView extends MustacheView {
-    protected MessageSource messageSource;
-
-    @Override
-    protected void renderMergedTemplateModel(Map<String, Object> model,
-        final HttpServletRequest request, HttpServletResponse response)
-        throws Exception {
-      model.put("i18n", new Mustache.Lambda() {
-        public void execute(Template.Fragment frag, Writer out)
-            throws IOException {
-          final String key = frag.execute();
-          final String text = messageSource.getMessage(key, null,
-              request.getLocale());
-          out.write(text);
-        }
-      });
-      super.renderMergedTemplateModel(model, request, response);
-    }
-  }
-
   @Bean
-  public MustacheViewResolver mustacheViewResolver() {
-    final MessageSource messageSource = messageSource();
-    MustacheViewResolver r = new MustacheViewResolver() {
-      @Override
-      protected Class<?> getViewClass() {
-        return MustacheSubView.class;
-      }
-
-      @Override
-      protected View loadView(String viewName, Locale locale) throws Exception {
-        MustacheSubView v = (MustacheSubView) super.loadView(viewName, locale);
-        v.messageSource = messageSource;
-        return v;
-      }
-    };
+  public MustacheJavaViewResolver mustacheJavaViewResolver() {
+    MustacheJavaViewResolver r = new MustacheJavaViewResolver();
     r.setPrefix("/WEB-INF/mustache/");
     r.setSuffix(".mustache");
     r.setViewNames(new String[] { "*-mustache" });
-    r.setTemplateLoader(mustacheTemplateLoader());
     r.setContentType(CONTENT_TYPE);
     return r;
   }
 
   @Bean
-  public MustacheTemplateLoader mustacheTemplateLoader() {
-    return new MustacheTemplateLoader();
+  public JmustacheViewResolver jmustacheViewResolver() {
+    JmustacheViewResolver r = new JmustacheViewResolver();
+    r.setPrefix("/WEB-INF/mustache/");
+    r.setSuffix(".mustache");
+    r.setViewNames(new String[] { "*-jmustache" });
+    r.setContentType(CONTENT_TYPE);
+    return r;
   }
 
   @Bean

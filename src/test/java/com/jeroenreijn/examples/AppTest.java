@@ -49,6 +49,7 @@ public class AppTest {
     run("rythm");
     run("thymeleaf");
     run("mustache");
+    run("jmustache");
     run("httl");
     run("velocity");
     run("freemarker");
@@ -103,7 +104,7 @@ public class AppTest {
         sum += f.get();
       }
     } catch (ExecutionException e) {
-      System.out.println(e);
+      e.printStackTrace();
     }
     System.gc();
     return sum;
