@@ -79,7 +79,7 @@ public class AppTest {
       }
     };
     System.out.println("warmup:" + name);
-    counter(running, c, 2);
+    counter(running, c, 3);
     System.out.println("start:" + name);
     long sum = counter(running, c, 5);
     System.out.println("stop :" + name);

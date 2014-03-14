@@ -6,10 +6,11 @@ This is a demo project to show the differences among several Java template engin
 * [Velocity](http://velocity.apache.org) - 1.7
 * [Thymeleaf](http://www.thymeleaf.org/) - 2.1.2.RELEASE
 * Mustache - Based on [JMustache](https://github.com/samskivert/jmustache) - 1.8
+* [Mustache.java](https://github.com/spullara/mustache.java) - 0.8.14
 * [Jade](https://github.com/neuland/jade4j) - 0.4.0
 * [Rythm](http://rythmengine.org/) - 1.0
-* [HTTL](http://httl.github.io/en/) - 1.0.11
 * [Handlebars](https://github.com/jknack/handlebars.java) - 1.3.0
+* -- [HTTL](http://httl.github.io/en/) - 1.0.11 --
 * -- JSP + JSTL - v1.2 --
 * -- [Scalate](http://scalate.fusesource.org)  - 1.6.1 --
 
@@ -20,17 +21,18 @@ You need Java 6 and Maven 3 to build and run this project.
 ### TODO
 
 + mvn package to create executable jar.
-+ use custom base name of messagesource in HTTL
-+ i18n for jade
-+ fix NPE in Scalate
-+ how to compile jasper in Java Application
 + measure rendering time.
 + pretty print
 + use good benchmark library if exists
 
++ HTTL: use custom base name of messagesource
++ Scalate: fix NPE
++ JSP: how to compile by jasper in Java Application
+
 ## Benchmarking
 
 Rendered in 5 seconds with 10 concurrent requests
+mustache.java is the fastest.
 ```
-{handlebars=31385, rythm=19732, thymeleaf=9038, mustache=79612, httl=0, velocity=108777, freemarker=92269, jade=0}
+{handlebars=31093, rythm=19248, thymeleaf=9921, mustache=107926, jmustache=70232, velocity=97288, freemarker=91943, jade=33084}
 ```

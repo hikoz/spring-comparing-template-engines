@@ -69,7 +69,8 @@ public class App {
       protected View loadView(String viewName, final Locale locale)
           throws Exception {
         JadeView v = (JadeView) super.loadView(viewName, locale);
-        v.addStaticAttribute("i18n", new I18nHelper(getApplicationContext(), locale));
+        v.addStaticAttribute("i18n", new I18nHelper(getApplicationContext(),
+            locale));
         return v;
       }
     };
@@ -209,7 +210,7 @@ public class App {
     return r;
   }
 
-  @Bean
+  // @Bean
   public HttlViewResolver httlViewResolver() {
     HttlViewResolver r = new HttlViewResolver();
     r.setPrefix("/WEB-INF/httl/");
