@@ -2,6 +2,7 @@ package com.jeroenreijn.examples;
 
 import httl.web.springmvc.HttlViewResolver;
 
+import java.util.Locale;
 import java.util.Properties;
 
 import org.fusesource.scalate.spring.view.ScalateViewResolver;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
@@ -30,6 +32,7 @@ import com.jeroenreijn.examples.viewresolvers.MustacheJavaViewResolver;
 
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.spring.template.SpringTemplateLoader;
+import de.neuland.jade4j.spring.view.JadeView;
 import de.neuland.jade4j.spring.view.JadeViewResolver;
 
 @Configuration
@@ -46,9 +49,30 @@ public class App {
     return l;
   }
 
+  public class I18nHelper {
+    private MessageSource messageSource;
+    private Locale locale;
+
+    public I18nHelper(MessageSource messageSource, Locale locale) {
+      this.messageSource = messageSource;
+      this.locale = locale;
+    }
+
+    public String message(String key) {
+      return messageSource.getMessage(key, null, locale);
+    }
+  }
+
   @Bean
   public JadeViewResolver jadeViewResolver() {
-    JadeViewResolver r = new JadeViewResolver();
+    JadeViewResolver r = new JadeViewResolver() {
+      protected View loadView(String viewName, final Locale locale)
+          throws Exception {
+        JadeView v = (JadeView) super.loadView(viewName, locale);
+        v.addStaticAttribute("i18n", new I18nHelper(getApplicationContext(), locale));
+        return v;
+      }
+    };
     r.setPrefix("/");
     r.setSuffix(".jade");
     r.setViewNames(new String[] { "*-jade" });
