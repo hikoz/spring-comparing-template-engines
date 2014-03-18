@@ -45,6 +45,7 @@ public class AppTest {
   @Test
   public void benchmark() throws Exception {
     counters = new LinkedHashMap<String, Long>();
+    run("str");
     run("handlebars");
     run("rythm");
     run("thymeleaf");
@@ -79,9 +80,9 @@ public class AppTest {
       }
     };
     System.out.println("warmup:" + name);
-    counter(running, c, 3);
+    counter(running, c, 10);
     System.out.println("start:" + name);
-    long sum = counter(running, c, 5);
+    long sum = counter(running, c, 10);
     System.out.println("stop :" + name);
     counters.put(name, sum);
   }
