@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -30,31 +31,47 @@ import org.springframework.web.context.WebApplicationContext;
 @WebAppConfiguration
 @ContextConfiguration(classes = App.class)
 public class AppTest {
-  private MockMvc mockMvc;
+  MockMvc mockMvc;
 
   @Autowired
   private WebApplicationContext wac;
-
   private LinkedHashMap<String, Long> counters;
+  static {
+    System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
+  }
 
   @Before
   public void setup() {
     mockMvc = webAppContextSetup(wac).build();
   }
 
+  List<String> templates = Arrays.asList(
+    "string",
+    "handlebars",
+    "rythm",
+    "thymeleaf",
+    "mustache",
+    "jmustache",
+    // "scalate",
+    // "httl",
+    "velocity",
+    "freemarker",
+    "jade");
+
+  @Test
+  public void simple() throws Exception {
+    for (String t : templates) {
+      System.out.println(t);
+      render(t);
+    }
+  }
+
   @Test
   public void benchmark() throws Exception {
     counters = new LinkedHashMap<String, Long>();
-    run("str");
-    run("handlebars");
-    run("rythm");
-    run("thymeleaf");
-    run("mustache");
-    run("jmustache");
-    // run("httl");
-    run("velocity");
-    run("freemarker");
-    run("jade");
+    for (String t : templates) {
+      run(t);
+    }
     System.out.println(counters);
   }
 
@@ -66,14 +83,7 @@ public class AppTest {
       public Long call() throws Exception {
         long count = 0L;
         while (running.get()) {
-          String expected = "<h3 class=\"panel-title\">Shootout! Template engines on the JVM - Jeroen Reijn</h3>";
-          mockMvc
-              .perform(get("/" + name))
-              .andExpect(
-                  header().string("Content-Type", "text/html;charset=UTF-8"))
-              .andExpect(status().isOk())
-              .andExpect(content().string(containsString("<h1>こんにちは")))
-              .andExpect(content().string(containsString(expected)));
+          render(name);
           count++;
         }
         return count;
@@ -85,6 +95,17 @@ public class AppTest {
     long sum = counter(running, c, 10);
     System.out.println("stop :" + name);
     counters.put(name, sum);
+  }
+
+  void render(final String name) throws Exception {
+    String expected = "<h3 class=\"panel-title\">Shootout! Template engines on the JVM - Jeroen Reijn</h3>";
+    mockMvc
+      .perform(get("/" + name))
+      .andExpect(
+        header().string("Content-Type", "text/html;charset=UTF-8"))
+      .andExpect(status().isOk())
+      .andExpect(content().string(containsString("<h1>こんにちは")))
+      .andExpect(content().string(containsString(expected)));
   }
 
   private long counter(final AtomicBoolean running,

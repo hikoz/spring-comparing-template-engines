@@ -3,7 +3,11 @@ package com.jeroenreijn.examples;
 import httl.web.springmvc.HttlViewResolver;
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.fusesource.scalate.spring.view.ScalateViewResolver;
 import org.rythmengine.spring.web.RythmConfigurer;
@@ -14,7 +18,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.view.AbstractTemplateView;
+import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
@@ -68,15 +75,15 @@ public class App {
     JadeViewResolver r = new JadeViewResolver() {
       protected View loadView(String viewName, final Locale locale)
           throws Exception {
-        JadeView v = (JadeView) super.loadView(viewName, locale);
+        JadeView v = (JadeView)super.loadView(viewName, locale);
         v.addStaticAttribute("i18n", new I18nHelper(getApplicationContext(),
-            locale));
+          locale));
         return v;
       }
     };
     r.setPrefix("/");
     r.setSuffix(".jade");
-    r.setViewNames(new String[] { "*-jade" });
+    r.setViewNames(new String[] {"*-jade"});
     JadeConfiguration c = new JadeConfiguration();
     c.setPrettyPrint(false);
     c.setTemplateLoader(jade4jTemplateLoader());
@@ -91,7 +98,7 @@ public class App {
     MustacheJavaViewResolver r = new MustacheJavaViewResolver();
     r.setPrefix("/WEB-INF/mustache/");
     r.setSuffix(".mustache");
-    r.setViewNames(new String[] { "*-mustache" });
+    r.setViewNames(new String[] {"*-mustache"});
     r.setContentType(CONTENT_TYPE);
     return r;
   }
@@ -99,9 +106,9 @@ public class App {
   @Bean
   public JmustacheViewResolver jmustacheViewResolver() {
     JmustacheViewResolver r = new JmustacheViewResolver();
-    r.setPrefix("/WEB-INF/mustache/");
+    r.setPrefix("/WEB-INF/jmustache/");
     r.setSuffix(".mustache");
-    r.setViewNames(new String[] { "*-jmustache" });
+    r.setViewNames(new String[] {"*-jmustache"});
     r.setContentType(CONTENT_TYPE);
     return r;
   }
@@ -112,13 +119,13 @@ public class App {
       @Override
       protected Handlebars createHandlebars(URLTemplateLoader templateLoader) {
         return super.createHandlebars(templateLoader).with(
-            new HighConcurrencyTemplateCache());
+          new HighConcurrencyTemplateCache());
       }
     };
     r.setPrefix("/WEB-INF/handlebars/");
     r.setSuffix(".hbs");
     r.setBindI18nToMessageSource(true);
-    r.setViewNames(new String[] { "*-handlebars" });
+    r.setViewNames(new String[] {"*-handlebars"});
     r.setContentType(CONTENT_TYPE);
     return r;
   }
@@ -138,7 +145,7 @@ public class App {
   @Bean
   public ThymeleafViewResolver thymeleafViewResolver() {
     ThymeleafViewResolver r = new ThymeleafViewResolver();
-    r.setViewNames(new String[] { "*-thymeleaf" });
+    r.setViewNames(new String[] {"*-thymeleaf"});
     r.setTemplateEngine(templateEngine());
     r.setContentType(CONTENT_TYPE);
     return r;
@@ -158,7 +165,7 @@ public class App {
   @Bean
   public FreeMarkerViewResolver freeMarkerViewResolver() {
     FreeMarkerViewResolver r = new FreeMarkerViewResolver();
-    r.setViewNames(new String[] { "*-freemarker" });
+    r.setViewNames(new String[] {"*-freemarker"});
     r.setSuffix(".ftl");
     r.setContentType(CONTENT_TYPE);
     return r;
@@ -177,7 +184,7 @@ public class App {
   @Bean
   public VelocityViewResolver velocityViewResolver() {
     VelocityViewResolver r = new VelocityViewResolver();
-    r.setViewNames(new String[] { "*-velocity" });
+    r.setViewNames(new String[] {"*-velocity"});
     r.setSuffix(".vm");
     r.setExposeSpringMacroHelpers(true);
     r.setContentType(CONTENT_TYPE);
@@ -186,11 +193,12 @@ public class App {
 
   // FIXME NPE at
   // org.fusesource.scalate.spring.view.ScalateUrlView.checkResource
-  // @Bean
+  @Bean
   public ScalateViewResolver scalateViewResolver() {
     ScalateViewResolver r = new ScalateViewResolver();
     r.setPrefix("/WEB-INF/scalate/");
     r.setSuffix(".scaml");
+    r.setViewNames(new String[] {"*-scalate"});
     return r;
   }
 
@@ -207,10 +215,11 @@ public class App {
   public RythmViewResolver rythmViewResolver() {
     RythmViewResolver r = new RythmViewResolver();
     r.setContentType(CONTENT_TYPE);
+    r.setViewNames(new String[] {"*-rythm"});
     return r;
   }
 
-  // @Bean
+  @Bean
   public HttlViewResolver httlViewResolver() {
     HttlViewResolver r = new HttlViewResolver();
     r.setPrefix("/WEB-INF/httl/");
@@ -225,5 +234,23 @@ public class App {
     s.setBasename("mymessages");
     s.setDefaultEncoding(UTF8);
     return s;
+  }
+
+  @Bean
+  public ViewResolver stringViewResolver() {
+    UrlBasedViewResolver r = new UrlBasedViewResolver();
+    r.setViewClass(StringView.class);
+    r.setViewNames(new String[] {"*-string"});
+    r.setContentType(CONTENT_TYPE);
+    return r;
+  }
+
+  static class StringView extends AbstractTemplateView {
+    protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request,
+        HttpServletResponse response) throws Exception {
+      String s = "<h1>こんにちは"
+        + "<h3 class=\"panel-title\">Shootout! Template engines on the JVM - Jeroen Reijn</h3>";
+      response.getWriter().write(s);
+    }
   }
 }
