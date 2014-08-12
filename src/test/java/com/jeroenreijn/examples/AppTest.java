@@ -56,7 +56,8 @@ public class AppTest {
     // "httl",
     "velocity",
     "freemarker",
-    "jade");
+    "jade",
+    "jtwig");
 
   @Test
   public void simple() throws Exception {

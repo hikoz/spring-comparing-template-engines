@@ -17,9 +17,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
@@ -36,6 +38,7 @@ import com.github.jknack.handlebars.io.URLTemplateLoader;
 import com.github.jknack.handlebars.springmvc.HandlebarsViewResolver;
 import com.jeroenreijn.examples.viewresolvers.JmustacheViewResolver;
 import com.jeroenreijn.examples.viewresolvers.MustacheJavaViewResolver;
+import com.lyncode.jtwig.mvc.JtwigViewResolver;
 
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.spring.template.SpringTemplateLoader;
@@ -243,6 +246,20 @@ public class App {
     r.setViewNames(new String[] {"*-string"});
     r.setContentType(CONTENT_TYPE);
     return r;
+  }
+
+  @Bean
+  public ViewResolver jtwigViewResolver() {
+    JtwigViewResolver r = new JtwigViewResolver();
+    r.setPrefix("/WEB-INF/jtwig/");
+    r.setSuffix(".twig");
+    r.setContentType(CONTENT_TYPE);
+    return r;
+  }
+  
+  @Bean
+  public LocaleResolver localeResolver() {
+    return new SessionLocaleResolver();
   }
 
   static class StringView extends AbstractTemplateView {

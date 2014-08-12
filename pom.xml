@@ -22,6 +22,7 @@
     <scalate-core_2.10.version>1.6.1</scalate-core_2.10.version>
     <httl-springmvc.version>1.0.11</httl-springmvc.version>
     <spring-rythm.version>1.0</spring-rythm.version>
+    <jtwig.version>2.1.7</jtwig.version>
   </properties>
   <build>
     <plugins>
@@ -148,6 +149,12 @@
       <groupId>com.github.httl</groupId>
       <artifactId>httl-springmvc</artifactId>
       <version>${httl-springmvc.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.lyncode</groupId>
+      <artifactId>jtwig-spring</artifactId>
+      <version>${jtwig.version}</version>
     </dependency>
 
     <!-- Test -->
