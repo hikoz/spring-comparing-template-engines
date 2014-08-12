@@ -48,7 +48,7 @@ public class AppTest {
   List<String> templates = Arrays.asList(
     "string",
     "handlebars",
-    "rythm",
+//    "rythm",
     "thymeleaf",
     "mustache",
     "jmustache",

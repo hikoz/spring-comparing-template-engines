@@ -202,7 +202,7 @@ public class App {
     return r;
   }
 
-  @Bean
+//  @Bean
   public RythmConfigurer rythmConfigurer() {
     RythmConfigurer c = new RythmConfigurer();
     c.setDevMode(false);
