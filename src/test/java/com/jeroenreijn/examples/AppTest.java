@@ -37,7 +37,8 @@ public class AppTest {
   private WebApplicationContext wac;
   private LinkedHashMap<String, Long> counters;
   static {
-    System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
+    System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY,
+        "TRACE");
   }
 
   @Before
@@ -46,18 +47,18 @@ public class AppTest {
   }
 
   List<String> templates = Arrays.asList(
-    "string",
-    "handlebars",
-//    "rythm",
-    "thymeleaf",
-    "mustache",
-    "jmustache",
-    // "scalate",
-    // "httl",
-    "velocity",
-    "freemarker",
-    "jade",
-    "jtwig");
+      "string",
+      "handlebars",
+      "rythm",
+      "thymeleaf",
+      "mustache",
+      "jmustache",
+      // "scalate",
+      "httl",
+      "velocity",
+      "freemarker",
+      "jade",
+      "jtwig");
 
   @Test
   public void simple() throws Exception {
@@ -69,14 +70,19 @@ public class AppTest {
 
   @Test
   public void benchmark() throws Exception {
-    counters = new LinkedHashMap<String, Long>();
+    counters = new LinkedHashMap<>();
     for (String t : templates) {
       run(t);
     }
-    System.out.println(counters);
+    counters
+        .entrySet()
+        .stream()
+        .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
+        .forEach(e -> System.out.printf("%12s:%8d\n", e.getKey(), e.getValue()));
   }
 
   int threads = 10;
+  int SEC = 10;
 
   private void run(final String name) throws Exception {
     final AtomicBoolean running = new AtomicBoolean(true);
@@ -91,22 +97,23 @@ public class AppTest {
       }
     };
     System.out.println("warmup:" + name);
-    counter(running, c, 10);
+    counter(running, c, SEC);
     System.out.println("start:" + name);
-    long sum = counter(running, c, 10);
+    long sum = counter(running, c, SEC);
     System.out.println("stop :" + name);
     counters.put(name, sum);
+    System.gc();
   }
 
   void render(final String name) throws Exception {
     String expected = "<h3 class=\"panel-title\">Shootout! Template engines on the JVM - Jeroen Reijn</h3>";
     mockMvc
-      .perform(get("/" + name))
-      .andExpect(
-        header().string("Content-Type", "text/html;charset=UTF-8"))
-      .andExpect(status().isOk())
-      .andExpect(content().string(containsString("<h1>こんにちは")))
-      .andExpect(content().string(containsString(expected)));
+        .perform(get("/" + name))
+        .andExpect(
+            header().string("Content-Type", "text/html;charset=UTF-8"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("<h1>こんにちは")))
+        .andExpect(content().string(containsString(expected)));
   }
 
   private long counter(final AtomicBoolean running,
@@ -129,7 +136,6 @@ public class AppTest {
     } catch (ExecutionException e) {
       e.printStackTrace();
     }
-    System.gc();
     return sum;
   }
 
