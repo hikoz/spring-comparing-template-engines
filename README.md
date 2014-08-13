@@ -34,15 +34,15 @@ You need Java 6 and Maven 3 to build and run this project.
 Rendered in 10 seconds with 10 concurrent requests.
 mustache.java is the fastest.
 ```
-      string: 1102776
-    mustache:  427644
-    velocity:  348688
-  freemarker:  345686
-   jmustache:  269758
-  handlebars:  190505
-        httl:  131195
-        jade:  102914
-   thymeleaf:   60780
-       rythm:   49211
-       jtwig:   12049
+      string: 1165496
+    mustache:  411902
+    velocity:  371813
+  freemarker:  359217
+   jmustache:  258177
+  handlebars:  191117
+        httl:  136301
+       jtwig:  121106
+        jade:  108183
+       rythm:   60847
+   thymeleaf:   60683
 ```

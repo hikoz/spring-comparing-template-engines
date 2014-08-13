@@ -260,6 +260,7 @@ public class App {
     r.setPrefix("/WEB-INF/jtwig/");
     r.setSuffix(".twig");
     r.setContentType(CONTENT_TYPE);
+    r.setCached(true);
     return r;
   }
 
