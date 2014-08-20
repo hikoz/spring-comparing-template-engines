@@ -32,7 +32,7 @@ public class PresentationsControllerTest {
   @Test
   public void should_return_jsp_view() throws Exception {
     final ModelAndView view = controller.home();
-    assertThat(view.getViewName(), is("index-jsp"));
+    assertThat(view.getViewName(), is("index-velocity"));
   }
 
   @Test

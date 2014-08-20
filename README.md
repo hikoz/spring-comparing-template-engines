@@ -17,13 +17,12 @@ This is a demo project to show the differences among several Java template engin
 
 
 ## Build and run
-You need Java 6 and Maven 3 to build and run this project.
+You need Java 8 and Maven 3 to build and run this project.
 
 ### TODO
 
-+ mvn package to create executable jar.
-+ measure rendering time.
-+ pretty print
++ create package as executable jar.
++ pretty print. per millisecond
 + use good benchmark library if exists
 
 + Scalate: fix NPE
