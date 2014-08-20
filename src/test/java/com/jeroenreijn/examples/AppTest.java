@@ -53,12 +53,14 @@ public class AppTest {
       "thymeleaf",
       "mustache",
       "jmustache",
-      // "scalate",
+//       "scalate",
       "httl",
       "velocity",
       "freemarker",
       "jade",
-      "jtwig");
+      "jtwig",
+      "pebble",
+      "freemarker");
 
   @Test
   public void simple() throws Exception {

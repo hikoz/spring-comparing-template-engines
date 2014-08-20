@@ -2,6 +2,9 @@ package com.jeroenreijn.examples;
 
 import httl.web.springmvc.HttlViewResolver;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -16,6 +19,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
@@ -40,6 +44,11 @@ import com.github.jknack.handlebars.springmvc.HandlebarsViewResolver;
 import com.jeroenreijn.examples.viewresolvers.JmustacheViewResolver;
 import com.jeroenreijn.examples.viewresolvers.MustacheJavaViewResolver;
 import com.lyncode.jtwig.mvc.JtwigViewResolver;
+import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.extension.AbstractExtension;
+import com.mitchellbosecke.pebble.extension.Function;
+import com.mitchellbosecke.pebble.spring.PebbleTemplateLoader;
+import com.mitchellbosecke.pebble.spring.PebbleViewResolver;
 
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.spring.template.SpringTemplateLoader;
@@ -255,12 +264,53 @@ public class App {
   }
 
   @Bean
-  public ViewResolver jtwigViewResolver() {
+  public JtwigViewResolver jtwigViewResolver() {
     JtwigViewResolver r = new JtwigViewResolver();
     r.setPrefix("/WEB-INF/jtwig/");
     r.setSuffix(".twig");
     r.setContentType(CONTENT_TYPE);
+    r.setViewNames(new String[] { "*-jtwig" });
     r.setCached(true);
+    return r;
+  }
+
+  @Bean
+  public PebbleTemplateLoader pebbleTemplateLoader() {
+    PebbleTemplateLoader l = new PebbleTemplateLoader();
+    l.setPrefix("/WEB-INF/pebble/");
+    l.setSuffix(".pebble");
+    return l;
+  }
+
+  @Bean
+  public PebbleViewResolver pebbleViewResolver() {
+    PebbleViewResolver r = new PebbleViewResolver();
+    r.setPrefix("/WEB-INF/pebble/");
+    r.setSuffix(".pebble");
+    final MessageSource messageSource = messageSource();
+    PebbleEngine engine = new PebbleEngine(pebbleTemplateLoader());
+    engine.addExtension(new AbstractExtension() {
+      public Map<String, Function> getFunctions() {
+        Map<String, Function> functions = new HashMap<>();
+        functions.put("i18n", new Function() {
+          public List<String> getArgumentNames() {
+            List<String> names = new ArrayList<>();
+            names.add("key");
+            return names;
+          }
+
+          public Object execute(Map<String, Object> args) {
+            String key = (String) args.get("key");
+            return messageSource.getMessage(key, null,
+                LocaleContextHolder.getLocale());
+          }
+        });
+        return functions;
+      }
+    });
+    r.setContentType(CONTENT_TYPE);
+    r.setPebbleEngine(engine);
+    r.setViewNames(new String[] { "*-pebble" });
     return r;
   }
 

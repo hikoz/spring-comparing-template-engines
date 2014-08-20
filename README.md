@@ -12,9 +12,7 @@ This is a demo project to show the differences among several Java template engin
 * [JTwig](https://github.com/lyncode/jtwig) - 2.1.7
 * [Rythm](http://rythmengine.org/) - 1.0
 * [HTTL](http://httl.github.io/en/) - 1.0.11
-* -- JSP + JSTL - v1.2 --
-* -- [Scalate](http://scalate.fusesource.org)  - 1.6.1 --
-
+* [Pebble](http://www.mitchellbosecke.com/pebble/) - 1.0.0
 
 ## Build and run
 You need Java 8 and Maven 3 to build and run this project.
@@ -25,23 +23,34 @@ You need Java 8 and Maven 3 to build and run this project.
 + pretty print. per millisecond
 + use good benchmark library if exists
 
-+ Scalate: fix NPE
-+ JSP: how to compile by jasper in Java Application
+* [Scalate](http://scalate.fusesource.org)  - 1.6.1
+* [Twirl](https://github.com/spray/twirl)  - 1.0.2
+* groovy-template
+* clojure-str
+* [hiccup "1.0.5"]
+* [stencil "0.3.4"]
+* [selmer "0.6.9"]
+* [tinsel "0.4.0"]
+* [me.shenfeng/mustache "1.1"]])
+
 
 ## Benchmarking
 
 Rendered in 10 seconds with 10 concurrent requests.
-mustache.java is the fastest.
+Pebble is the fastest.
+
+we must use Pebble.
 ```
-      string: 1165496
-    mustache:  411902
-    velocity:  371813
-  freemarker:  359217
-   jmustache:  258177
-  handlebars:  191117
-        httl:  136301
-       jtwig:  121106
-        jade:  108183
-       rythm:   60847
-   thymeleaf:   60683
+      string: 1055217
+      pebble:  536698
+    mustache:  432172
+    velocity:  390009
+  freemarker:  360053
+   jmustache:  273438
+  handlebars:  190972
+        httl:  149052
+       jtwig:  130350
+        jade:  102903
+       rythm:   57297
+   thymeleaf:   56270
 ```
