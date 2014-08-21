@@ -53,7 +53,7 @@ public class AppTest {
       "thymeleaf",
       "mustache",
       "jmustache",
-//       "scalate",
+      // "scalate",
       "httl",
       "velocity",
       "freemarker",
@@ -84,7 +84,7 @@ public class AppTest {
   }
 
   int threads = 10;
-  int SEC = 10;
+  int SEC = 3;
 
   private void run(final String name) throws Exception {
     final AtomicBoolean running = new AtomicBoolean(true);
@@ -122,7 +122,7 @@ public class AppTest {
       Callable<Long> c, int sec) throws Exception {
     ExecutorService pool = Executors.newFixedThreadPool(threads);
     running.set(true);
-    List<Future<Long>> l = new ArrayList<Future<Long>>();
+    List<Future<Long>> l = new ArrayList<>();
     for (int i = 0; i < threads; ++i) {
       l.add(pool.submit(c));
     }

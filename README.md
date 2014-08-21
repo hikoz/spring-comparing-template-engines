@@ -1,6 +1,7 @@
 #Comparing Template engines for Spring MVC
 
-This is a demo project to show the differences among several Java template engines in combination with Spring MVC. Template engines used in this project are:
+This is a demo project to show the differences among several Java template engines in combination with Spring MVC.
+Template engines used in this project are:
 
 * [Freemarker](http://www.freemarker.org) - 2.3.20
 * [Velocity](http://velocity.apache.org) - 1.7
@@ -15,13 +16,21 @@ This is a demo project to show the differences among several Java template engin
 * [Pebble](http://www.mitchellbosecke.com/pebble/) - 1.0.0
 
 ## Build and run
-You need Java 8 and Maven 3 to build and run this project.
+You need Java 8 to build and run this project.
+```
+gradle run
+```
+or
+```
+./gradlew run
+```
+AppTest is useful for checking implementation.
 
 ### TODO
-
-+ create package as executable jar.
-+ pretty print. per millisecond
-+ use good benchmark library if exists
+* stop verify each iteration
+* stop using MockMvc. directly call ViewResolver
+* create AbstractTemplateEngine and GenericViewResolver
+* compare performance of each ViewResolver itself
 
 * [Scalate](http://scalate.fusesource.org)  - 1.6.1
 * [Twirl](https://github.com/spray/twirl)  - 1.0.2

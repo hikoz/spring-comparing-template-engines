@@ -2,7 +2,7 @@ package com.jeroenreijn.examples;
 
 import httl.web.springmvc.HttlViewResolver;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -15,18 +15,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.fusesource.scalate.spring.view.ScalateViewResolver;
 import org.rythmengine.spring.web.RythmConfigurer;
 import org.rythmengine.spring.web.RythmViewResolver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
-import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
@@ -61,27 +63,8 @@ import de.neuland.jade4j.spring.view.JadeViewResolver;
 public class App {
   private static final String UTF8 = "UTF-8";
   String CONTENT_TYPE = "text/html;charset=" + UTF8;
-
-  @Bean
-  public SpringTemplateLoader jade4jTemplateLoader() {
-    SpringTemplateLoader l = new SpringTemplateLoader();
-    l.setBasePath("/WEB-INF/jade/");
-    return l;
-  }
-
-  public class I18nHelper {
-    private MessageSource messageSource;
-    private Locale locale;
-
-    public I18nHelper(MessageSource messageSource, Locale locale) {
-      this.messageSource = messageSource;
-      this.locale = locale;
-    }
-
-    public String message(String key) {
-      return messageSource.getMessage(key, null, locale);
-    }
-  }
+  @Autowired
+  WebApplicationContext ac;
 
   @Bean
   public JadeViewResolver jadeViewResolver() {
@@ -89,17 +72,19 @@ public class App {
       protected View loadView(String viewName, final Locale locale)
           throws Exception {
         JadeView v = (JadeView) super.loadView(viewName, locale);
-        v.addStaticAttribute("i18n", new I18nHelper(getApplicationContext(),
-            locale));
+        v.addStaticAttribute("i18n", new I18nHelper(locale));
         return v;
       }
     };
-    r.setPrefix("/");
+    r.setPrefix("/WEB-INF/jade/");
     r.setSuffix(".jade");
     r.setViewNames(new String[] { "*-jade" });
     JadeConfiguration c = new JadeConfiguration();
     c.setPrettyPrint(false);
-    c.setTemplateLoader(jade4jTemplateLoader());
+    SpringTemplateLoader l = new SpringTemplateLoader();
+    l.setServletContext(ac.getServletContext());
+    l.init();
+    c.setTemplateLoader(l);
     r.setConfiguration(c);
     r.setRenderExceptions(true);
     r.setContentType(CONTENT_TYPE);
@@ -144,22 +129,19 @@ public class App {
   }
 
   @Bean
-  public SpringTemplateEngine templateEngine() {
-    SpringTemplateEngine e = new SpringTemplateEngine();
-    ServletContextTemplateResolver r = new ServletContextTemplateResolver();
-    r.setPrefix("/WEB-INF/thymeleaf/");
-    r.setSuffix(".html");
-    r.setTemplateMode("HTML5");
-    r.setCharacterEncoding(UTF8);
-    e.setTemplateResolver(r);
-    return e;
-  }
-
-  @Bean
-  public ThymeleafViewResolver thymeleafViewResolver() {
+  public ThymeleafViewResolver thymeleafViewResolver() throws Exception {
     ThymeleafViewResolver r = new ThymeleafViewResolver();
     r.setViewNames(new String[] { "*-thymeleaf" });
-    r.setTemplateEngine(templateEngine());
+    SpringTemplateEngine e = new SpringTemplateEngine();
+    ServletContextTemplateResolver tr = new ServletContextTemplateResolver();
+    tr.setPrefix("/WEB-INF/thymeleaf/");
+    tr.setSuffix(".html");
+    tr.setTemplateMode("HTML5");
+    tr.setCharacterEncoding(UTF8);
+    e.setTemplateResolver(tr);
+    e.setMessageSource(messageSource());
+    e.afterPropertiesSet();
+    r.setTemplateEngine(e);
     r.setContentType(CONTENT_TYPE);
     return r;
   }
@@ -275,39 +257,28 @@ public class App {
   }
 
   @Bean
-  public PebbleTemplateLoader pebbleTemplateLoader() {
-    PebbleTemplateLoader l = new PebbleTemplateLoader();
-    l.setPrefix("/WEB-INF/pebble/");
-    l.setSuffix(".pebble");
-    return l;
-  }
-
-  @Bean
   public PebbleViewResolver pebbleViewResolver() {
-    PebbleViewResolver r = new PebbleViewResolver();
-    r.setPrefix("/WEB-INF/pebble/");
-    r.setSuffix(".pebble");
-    final MessageSource messageSource = messageSource();
-    PebbleEngine engine = new PebbleEngine(pebbleTemplateLoader());
+    PebbleTemplateLoader l = new PebbleTemplateLoader();
+    l.setResourceLoader(ac);
+    PebbleEngine engine = new PebbleEngine(l);
     engine.addExtension(new AbstractExtension() {
       public Map<String, Function> getFunctions() {
         Map<String, Function> functions = new HashMap<>();
         functions.put("i18n", new Function() {
           public List<String> getArgumentNames() {
-            List<String> names = new ArrayList<>();
-            names.add("key");
-            return names;
+            return Arrays.asList("key");
           }
 
           public Object execute(Map<String, Object> args) {
-            String key = (String) args.get("key");
-            return messageSource.getMessage(key, null,
-                LocaleContextHolder.getLocale());
+            return ac.getMessage((String) args.get("key"), null, LocaleContextHolder.getLocale());
           }
         });
         return functions;
       }
     });
+    PebbleViewResolver r = new PebbleViewResolver();
+    r.setPrefix("/WEB-INF/pebble/");
+    r.setSuffix(".pebble");
     r.setContentType(CONTENT_TYPE);
     r.setPebbleEngine(engine);
     r.setViewNames(new String[] { "*-pebble" });
@@ -316,7 +287,19 @@ public class App {
 
   @Bean
   public LocaleResolver localeResolver() {
-    return new SessionLocaleResolver();
+    return new AcceptHeaderLocaleResolver();
+  }
+
+  public final class I18nHelper {
+    private final Locale locale;
+
+    private I18nHelper(Locale locale) {
+      this.locale = locale;
+    }
+
+    public CharSequence message(String key) {
+      return ac.getMessage(key, null, locale);
+    }
   }
 
   static class StringView extends AbstractTemplateView {
