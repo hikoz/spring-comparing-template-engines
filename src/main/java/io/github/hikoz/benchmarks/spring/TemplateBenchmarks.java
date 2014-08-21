@@ -29,18 +29,15 @@ import com.jeroenreijn.examples.App;
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
-@OutputTimeUnit(TimeUnit.SECONDS)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(value = 1, jvmArgsAppend = { "-Xmx2048m", "-server",
     "-XX:+AggressiveOpts" })
-@Measurement(iterations = 5, time = 300, timeUnit = TimeUnit.MILLISECONDS)
-@Warmup(iterations = 5, time = 300, timeUnit = TimeUnit.MILLISECONDS)
-@Threads(10)
+@Warmup(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
+@Threads(20)
 public class TemplateBenchmarks {
   MockMvc mockMvc;
 
-  static {
-    // System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
-  }
   @Param({
       "string",
       "handlebars",
@@ -48,11 +45,12 @@ public class TemplateBenchmarks {
       "thymeleaf",
       "mustache",
       "jmustache",
-      // "scalate",
+      "scalate",
+      "scalate-steb",
       "httl",
       "velocity",
-      "freemarker",
       "jade",
+      "jade-steb",
       "jtwig",
       "pebble",
       "freemarker",

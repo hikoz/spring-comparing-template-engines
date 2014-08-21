@@ -1,7 +1,7 @@
 package com.jeroenreijn.examples;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Repository;
@@ -12,7 +12,7 @@ import com.jeroenreijn.examples.model.Presentation;
 public class InMemoryPresentationsRepository implements PresentationsRepository {
 
     private static AtomicLong counter = new AtomicLong();
-    private ConcurrentMap<Long, Presentation> presentations = new ConcurrentHashMap<Long, Presentation>();
+    private Map<Long, Presentation> presentations = new HashMap<>();
 
     public InMemoryPresentationsRepository() {
 

@@ -31,8 +31,7 @@ dependencies {
     compile 'org.thymeleaf:thymeleaf-spring3:2.1.3.RELEASE'
     compile 'org.freemarker:freemarker:2.3.20'
     compile 'org.apache.velocity:velocity:1.7'
-    compile 'org.fusesource.scalate:scalate-core_2.10:1.6.1'
-    compile 'org.fusesource.scalate:scalate-spring-mvc_2.10:1.6.1'
+    compile 'org.scalatra.scalate:scalate-core_2.11:1.7.0'
     compile 'org.rythmengine:spring-rythm:1.0'
     compile 'com.samskivert:jmustache:1.9'
     compile 'com.github.spullara.mustache.java:compiler:0.8.16'
@@ -41,7 +40,6 @@ dependencies {
     compile 'com.github.httl:httl-springmvc:1.0.11'
     compile 'com.lyncode:jtwig-spring:2.1.7'
     compile 'com.mitchellbosecke:pebble-spring3:1.0.0'
-
 
     compile 'org.openjdk.jmh:jmh-core:0.9.7'
     compile 'org.openjdk.jmh:jmh-generator-annprocess:0.9.7'

@@ -1,6 +1,12 @@
 package com.jeroenreijn.examples;
 
 import httl.web.springmvc.HttlViewResolver;
+import io.github.hikoz.benchmarks.steb.StebLoader;
+import io.github.hikoz.benchmarks.steb.StebViewResolver;
+import io.github.hikoz.benchmarks.templates.JadeSteb;
+import io.github.hikoz.benchmarks.templates.JmustacheSteb;
+import io.github.hikoz.benchmarks.templates.MustacheJavaSteb;
+import io.github.hikoz.benchmarks.templates.ScalateSteb;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,7 +18,6 @@ import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.fusesource.scalate.spring.view.ScalateViewResolver;
 import org.rythmengine.spring.web.RythmConfigurer;
 import org.rythmengine.spring.web.RythmViewResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +48,6 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.cache.HighConcurrencyTemplateCache;
 import com.github.jknack.handlebars.io.URLTemplateLoader;
 import com.github.jknack.handlebars.springmvc.HandlebarsViewResolver;
-import com.jeroenreijn.examples.viewresolvers.JmustacheViewResolver;
-import com.jeroenreijn.examples.viewresolvers.MustacheJavaViewResolver;
 import com.lyncode.jtwig.mvc.JtwigViewResolver;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
@@ -92,22 +95,26 @@ public class App {
   }
 
   @Bean
-  public MustacheJavaViewResolver mustacheJavaViewResolver() {
-    MustacheJavaViewResolver r = new MustacheJavaViewResolver();
-    r.setPrefix("/WEB-INF/mustache/");
-    r.setSuffix(".mustache");
-    r.setViewNames(new String[] { "*-mustache" });
-    r.setContentType(CONTENT_TYPE);
+  public StebViewResolver jadeViewResolverSteb() {
+    StebViewResolver r = new StebViewResolver(new JadeSteb(
+        new StebLoader(ac, "/WEB-INF/jade/*.jade")));
+    r.setViewNames(new String[] { "*-jade-steb" });
     return r;
   }
 
   @Bean
-  public JmustacheViewResolver jmustacheViewResolver() {
-    JmustacheViewResolver r = new JmustacheViewResolver();
-    r.setPrefix("/WEB-INF/jmustache/");
-    r.setSuffix(".mustache");
+  public StebViewResolver mustacheJavaViewResolver() {
+    StebViewResolver r = new StebViewResolver(new MustacheJavaSteb(
+        new StebLoader(ac, "/WEB-INF/mustache/*.mustache")));
+    r.setViewNames(new String[] { "*-mustache" });
+    return r;
+  }
+
+  @Bean
+  public StebViewResolver jmustacheViewResolver() {
+    StebViewResolver r = new StebViewResolver(new JmustacheSteb(
+        new StebLoader(ac, "/WEB-INF/jmustache/*.mustache")));
     r.setViewNames(new String[] { "*-jmustache" });
-    r.setContentType(CONTENT_TYPE);
     return r;
   }
 
@@ -186,13 +193,10 @@ public class App {
     return r;
   }
 
-  // FIXME NPE at
-  // org.fusesource.scalate.spring.view.ScalateUrlView.checkResource
   @Bean
-  public ScalateViewResolver scalateViewResolver() {
-    ScalateViewResolver r = new ScalateViewResolver();
-    r.setPrefix("/WEB-INF/scalate/");
-    r.setSuffix(".scaml");
+  public StebViewResolver scalateViewResolverSteb() {
+    StebLoader stebLoader = new StebLoader(ac, "/WEB-INF/scalate/*.scaml");
+    StebViewResolver r = new StebViewResolver(new ScalateSteb(stebLoader));
     r.setViewNames(new String[] { "*-scalate" });
     return r;
   }

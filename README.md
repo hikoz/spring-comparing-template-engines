@@ -14,6 +14,7 @@ Template engines used in this project are:
 * [Rythm](http://rythmengine.org/) - 1.0
 * [HTTL](http://httl.github.io/en/) - 1.0.11
 * [Pebble](http://www.mitchellbosecke.com/pebble/) - 1.0.0
+* [Scalate](http://scalate.fusesource.org)  - 1.7.0
 
 ## Build and run
 You need Java 8 to build and run this project.
@@ -27,12 +28,11 @@ or
 AppTest is useful for checking implementation.
 
 ### TODO
-* stop verify each iteration
+* stop verification in each iteration
 * stop using MockMvc. directly call ViewResolver
-* create AbstractTemplateEngine and GenericViewResolver
-* compare performance of each ViewResolver itself
+* sort and prettify results
+* apply steb to all template engine
 
-* [Scalate](http://scalate.fusesource.org)  - 1.6.1
 * [Twirl](https://github.com/spray/twirl)  - 1.0.2
 * groovy-template
 * clojure-str
@@ -44,22 +44,24 @@ AppTest is useful for checking implementation.
 
 
 ## Benchmarking
-
-Rendered in 10 seconds with 10 concurrent requests.
+Rendered with 10 concurrent requests.
 Pebble is the fastest.
 
 we must use Pebble.
 ```
-      string: 1055217
-      pebble:  536698
-    mustache:  432172
-    velocity:  390009
-  freemarker:  360053
-   jmustache:  273438
-  handlebars:  190972
-        httl:  149052
-       jtwig:  130350
-        jade:  102903
-       rythm:   57297
-   thymeleaf:   56270
+Benchmark                                       (engine)   Mode  Samples    Score  Score error   Units
+i.g.h.b.s.TemplateBenchmarks.templateBench        string  thrpt        7  123.501        9.292  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench    handlebars  thrpt        7   19.121        0.387  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench         rythm  thrpt        7    6.073        0.180  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench     thymeleaf  thrpt        7    6.604        0.229  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench      mustache  thrpt        7   44.024        2.634  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench     jmustache  thrpt        7   30.653        0.654  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench       scalate  thrpt        7   11.206        1.008  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench          httl  thrpt        7   14.915        0.116  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench      velocity  thrpt        7   38.733        2.752  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench          jade  thrpt        7   10.950        0.078  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench     jade-steb  thrpt        7   12.510        0.222  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench         jtwig  thrpt        7   12.602        0.332  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench        pebble  thrpt        7   49.266        2.965  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench    freemarker  thrpt        7   38.462        0.682  ops/m
 ```

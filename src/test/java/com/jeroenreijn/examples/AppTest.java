@@ -53,11 +53,12 @@ public class AppTest {
       "thymeleaf",
       "mustache",
       "jmustache",
-      // "scalate",
+      "scalate",
       "httl",
       "velocity",
       "freemarker",
       "jade",
+      "jade-steb",
       "jtwig",
       "pebble",
       "freemarker");
