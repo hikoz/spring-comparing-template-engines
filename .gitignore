@@ -1,8 +1,6 @@
-*.iml
-.idea
+.*
 target
-.project
-.settings
-.classpath
+bin
+build
 BenchmarkList
 CompilerHints

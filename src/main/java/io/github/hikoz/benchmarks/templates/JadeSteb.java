@@ -1,5 +1,6 @@
 package io.github.hikoz.benchmarks.templates;
 
+import io.github.hikoz.benchmarks.steb.I18n;
 import io.github.hikoz.benchmarks.steb.Steb;
 import io.github.hikoz.benchmarks.steb.StebLoader;
 
@@ -14,11 +15,9 @@ import de.neuland.jade4j.template.JadeTemplate;
 import de.neuland.jade4j.template.TemplateLoader;
 
 public class JadeSteb implements Steb {
-  private StebLoader loader;
   private JadeConfiguration jade;
 
   public JadeSteb(StebLoader loader) {
-    this.loader = loader;
     jade = new JadeConfiguration();
     jade.setCaching(true);
     jade.setPrettyPrint(false);
@@ -31,6 +30,7 @@ public class JadeSteb implements Steb {
         return loader.lastModified(name);
       }
     });
+    jade.setSharedVariables(ImmutableMap.of("i18n", (I18n) (key) -> loader.message(key)));
   }
 
   @Override
@@ -41,12 +41,6 @@ public class JadeSteb implements Steb {
 
   @Override
   public Map<String, ?> attributes() {
-    return ImmutableMap.of("i18n", new I18n());
-  }
-
-  public class I18n {
-    public String message(String key) {
-      return loader.message(key);
-    }
+    return ImmutableMap.of();
   }
 }

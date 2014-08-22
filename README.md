@@ -44,24 +44,29 @@ AppTest is useful for checking implementation.
 
 
 ## Benchmarking
-Rendered with 10 concurrent requests.
-Pebble is the fastest.
+Rendered with 30 concurrent requests.
 
-we must use Pebble.
+Pebble is awesome.
+string version is simple StringBuilder version.
+Pebble has almost same speed as raw StringBuilder.
+Use Pebble or stop using Spring.
+pebble-spring3 is also good implementation of ViewResolver.
 ```
-Benchmark                                       (engine)   Mode  Samples    Score  Score error   Units
-i.g.h.b.s.TemplateBenchmarks.templateBench        string  thrpt        7  123.501        9.292  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench    handlebars  thrpt        7   19.121        0.387  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench         rythm  thrpt        7    6.073        0.180  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench     thymeleaf  thrpt        7    6.604        0.229  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench      mustache  thrpt        7   44.024        2.634  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench     jmustache  thrpt        7   30.653        0.654  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench       scalate  thrpt        7   11.206        1.008  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench          httl  thrpt        7   14.915        0.116  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench      velocity  thrpt        7   38.733        2.752  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench          jade  thrpt        7   10.950        0.078  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench     jade-steb  thrpt        7   12.510        0.222  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench         jtwig  thrpt        7   12.602        0.332  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench        pebble  thrpt        7   49.266        2.965  ops/ms
-i.g.h.b.s.TemplateBenchmarks.templateBench    freemarker  thrpt        7   38.462        0.682  ops/m
+Benchmark                                            (engine)   Mode  Samples   Score  Score error   Units
+i.g.h.b.s.TemplateBenchmarks.templateBench             string  thrpt        5  51.000        5.970  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench         handlebars  thrpt        5  18.278        4.944  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench    handlebars-steb  thrpt        5  18.045       10.837  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench              rythm  thrpt        5   5.017        1.158  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench          thymeleaf  thrpt        5   5.679        0.475  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench           mustache  thrpt        5  41.663        5.805  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench          jmustache  thrpt        5  27.676        4.954  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench            scalate  thrpt        5  11.142        1.912  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench               httl  thrpt        5  14.953        2.801  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench           velocity  thrpt        5  37.464        7.600  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench               jade  thrpt        5   9.753        1.712  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench          jade-steb  thrpt        5  11.694        0.649  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench              jtwig  thrpt        5  11.923        2.583  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench             pebble  thrpt        5  49.517        2.838  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench        pebble-steb  thrpt        5  43.667        2.471  ops/ms
+i.g.h.b.s.TemplateBenchmarks.templateBench         freemarker  thrpt        5  34.353        3.960  ops/ms
 ```

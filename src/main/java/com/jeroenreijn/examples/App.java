@@ -1,22 +1,22 @@
 package com.jeroenreijn.examples;
 
 import httl.web.springmvc.HttlViewResolver;
+import io.github.hikoz.benchmarks.steb.I18n;
 import io.github.hikoz.benchmarks.steb.StebLoader;
 import io.github.hikoz.benchmarks.steb.StebViewResolver;
+import io.github.hikoz.benchmarks.templates.HandlebarsSteb;
 import io.github.hikoz.benchmarks.templates.JadeSteb;
 import io.github.hikoz.benchmarks.templates.JmustacheSteb;
 import io.github.hikoz.benchmarks.templates.MustacheJavaSteb;
+import io.github.hikoz.benchmarks.templates.PebbleSteb;
 import io.github.hikoz.benchmarks.templates.ScalateSteb;
+import io.github.hikoz.benchmarks.templates.StringSteb;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.rythmengine.spring.web.RythmConfigurer;
 import org.rythmengine.spring.web.RythmViewResolver;
@@ -29,13 +29,10 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
-import org.springframework.web.servlet.view.AbstractTemplateView;
-import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
@@ -57,7 +54,6 @@ import com.mitchellbosecke.pebble.spring.PebbleViewResolver;
 
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.spring.template.SpringTemplateLoader;
-import de.neuland.jade4j.spring.view.JadeView;
 import de.neuland.jade4j.spring.view.JadeViewResolver;
 
 @Configuration
@@ -71,14 +67,7 @@ public class App {
 
   @Bean
   public JadeViewResolver jadeViewResolver() {
-    JadeViewResolver r = new JadeViewResolver() {
-      protected View loadView(String viewName, final Locale locale)
-          throws Exception {
-        JadeView v = (JadeView) super.loadView(viewName, locale);
-        v.addStaticAttribute("i18n", new I18nHelper(locale));
-        return v;
-      }
-    };
+    JadeViewResolver r = new JadeViewResolver();
     r.setPrefix("/WEB-INF/jade/");
     r.setSuffix(".jade");
     r.setViewNames(new String[] { "*-jade" });
@@ -91,6 +80,8 @@ public class App {
     r.setConfiguration(c);
     r.setRenderExceptions(true);
     r.setContentType(CONTENT_TYPE);
+    r.getAttributesMap().put("i18n",
+        (I18n) (key) -> ac.getMessage(key, null, LocaleContextHolder.getLocale()));
     return r;
   }
 
@@ -132,6 +123,14 @@ public class App {
     r.setBindI18nToMessageSource(true);
     r.setViewNames(new String[] { "*-handlebars" });
     r.setContentType(CONTENT_TYPE);
+    return r;
+  }
+
+  @Bean
+  public ViewResolver handlebarsViewResolverSteb() {
+    StebLoader stebLoader = new StebLoader(ac, "/WEB-INF/handlebars/*.hbs");
+    StebViewResolver r = new StebViewResolver(new HandlebarsSteb(stebLoader));
+    r.setViewNames(new String[] { "*-handlebars-steb" });
     return r;
   }
 
@@ -241,11 +240,10 @@ public class App {
   }
 
   @Bean
-  public ViewResolver stringViewResolver() {
-    UrlBasedViewResolver r = new UrlBasedViewResolver();
-    r.setViewClass(StringView.class);
+  public StebViewResolver stringViewResolverSteb() {
+    StebLoader stebLoader = new StebLoader(ac, "/WEB-INF/string/*.txt");
+    StebViewResolver r = new StebViewResolver(new StringSteb(stebLoader));
     r.setViewNames(new String[] { "*-string" });
-    r.setContentType(CONTENT_TYPE);
     return r;
   }
 
@@ -279,6 +277,7 @@ public class App {
         });
         return functions;
       }
+
     });
     PebbleViewResolver r = new PebbleViewResolver();
     r.setPrefix("/WEB-INF/pebble/");
@@ -290,29 +289,15 @@ public class App {
   }
 
   @Bean
+  public StebViewResolver pebbleViewResolverSteb() {
+    StebLoader stebLoader = new StebLoader(ac, "/WEB-INF/pebble/*.pebble");
+    StebViewResolver r = new StebViewResolver(new PebbleSteb(stebLoader));
+    r.setViewNames(new String[] { "*-pebble-steb" });
+    return r;
+  }
+
+  @Bean
   public LocaleResolver localeResolver() {
     return new AcceptHeaderLocaleResolver();
-  }
-
-  public final class I18nHelper {
-    private final Locale locale;
-
-    private I18nHelper(Locale locale) {
-      this.locale = locale;
-    }
-
-    public CharSequence message(String key) {
-      return ac.getMessage(key, null, locale);
-    }
-  }
-
-  static class StringView extends AbstractTemplateView {
-    protected void renderMergedTemplateModel(Map<String, Object> model,
-        HttpServletRequest request,
-        HttpServletResponse response) throws Exception {
-      String s = "<h1>こんにちは"
-          + "<h3 class=\"panel-title\">Shootout! Template engines on the JVM - Jeroen Reijn</h3>";
-      response.getWriter().write(s);
-    }
   }
 }

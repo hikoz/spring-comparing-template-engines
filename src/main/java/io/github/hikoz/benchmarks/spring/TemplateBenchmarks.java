@@ -34,25 +34,26 @@ import com.jeroenreijn.examples.App;
     "-XX:+AggressiveOpts" })
 @Warmup(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
-@Threads(20)
+@Threads(30)
 public class TemplateBenchmarks {
   MockMvc mockMvc;
 
   @Param({
       "string",
       "handlebars",
+      "handlebars-steb",
       "rythm",
       "thymeleaf",
       "mustache",
       "jmustache",
       "scalate",
-      "scalate-steb",
       "httl",
       "velocity",
       "jade",
       "jade-steb",
       "jtwig",
       "pebble",
+      "pebble-steb",
       "freemarker",
   })
   String engine;
@@ -72,6 +73,8 @@ public class TemplateBenchmarks {
 
   @Setup
   public void setup() {
+    System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "WARN");
+
     context = new AnnotationConfigWebApplicationContext();
     context.register(App.class);
     MockServletContext sc = new MockServletContext("src/main/webapp",

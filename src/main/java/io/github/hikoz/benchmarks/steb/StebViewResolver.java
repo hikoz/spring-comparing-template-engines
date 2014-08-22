@@ -30,6 +30,7 @@ public class StebViewResolver extends AbstractTemplateViewResolver {
   protected void initApplicationContext() {
     setViewClass(requiredViewClass());
     setAttributesMap(steb.attributes());
+    setContentType("text/html;charset=UTF-8");
     super.initApplicationContext();
   }
 
@@ -37,13 +38,12 @@ public class StebViewResolver extends AbstractTemplateViewResolver {
   protected View loadView(String viewName, final Locale locale)
       throws Exception {
     StebView v = (StebView) super.loadView(viewName, locale);
-    v.setContentType("text/html;charset=UTF-8");
-    v.template = steb.template(viewName);
+    v.setTemplate(steb.template(viewName));
     return v;
   }
 
   static class StebView extends AbstractTemplateView {
-    public StebTemplate template;
+    private StebTemplate template;
 
     @Override
     protected void renderMergedTemplateModel(Map<String, Object> model,
@@ -52,6 +52,10 @@ public class StebViewResolver extends AbstractTemplateViewResolver {
       try (PrintWriter w = response.getWriter()) {
         template.writeTo(w, model);
       }
+    }
+
+    public void setTemplate(StebTemplate template) {
+      this.template = template;
     }
   }
 }

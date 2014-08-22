@@ -49,6 +49,7 @@ public class AppTest {
   List<String> templates = Arrays.asList(
       "string",
       "handlebars",
+      "handlebars-steb",
       "rythm",
       "thymeleaf",
       "mustache",
@@ -61,6 +62,7 @@ public class AppTest {
       "jade-steb",
       "jtwig",
       "pebble",
+      "pebble-steb",
       "freemarker");
 
   @Test
