@@ -9,24 +9,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.jeroenreijn.examples.PresentationsRepository;
-import com.jeroenreijn.examples.model.Presentation;
-
 public class PresentationsControllerTest {
   PresentationsController controller;
 
   @Before
   public void setUp() throws Exception {
     controller = new PresentationsController();
-    controller.presentationsRepository = new PresentationsRepository() {
-      public Presentation findPresentation(Long id) {
-        return null;
-      }
-
-      public Iterable<Presentation> findAll() {
-        return new ArrayList<Presentation>();
-      }
-    };
+    controller.presentationsRepository = () -> new ArrayList<>();
   }
 
   @Test

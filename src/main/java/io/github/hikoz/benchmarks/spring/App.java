@@ -1,4 +1,4 @@
-package com.jeroenreijn.examples;
+package io.github.hikoz.benchmarks.spring;
 
 import httl.web.springmvc.HttlViewResolver;
 import io.github.hikoz.benchmarks.steb.I18n;
@@ -23,7 +23,6 @@ import org.rythmengine.spring.web.RythmViewResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -45,6 +44,9 @@ import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.cache.HighConcurrencyTemplateCache;
 import com.github.jknack.handlebars.io.URLTemplateLoader;
 import com.github.jknack.handlebars.springmvc.HandlebarsViewResolver;
+import com.jeroenreijn.examples.InMemoryPresentationsRepository;
+import com.jeroenreijn.examples.PresentationsRepository;
+import com.jeroenreijn.examples.controller.PresentationsController;
 import com.lyncode.jtwig.mvc.JtwigViewResolver;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
@@ -58,7 +60,6 @@ import de.neuland.jade4j.spring.view.JadeViewResolver;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan
 public class App {
   private static final String UTF8 = "UTF-8";
   String CONTENT_TYPE = "text/html;charset=" + UTF8;
@@ -299,5 +300,15 @@ public class App {
   @Bean
   public LocaleResolver localeResolver() {
     return new AcceptHeaderLocaleResolver();
+  }
+
+  @Bean
+  public PresentationsRepository presentationsRepository() {
+    return new InMemoryPresentationsRepository();
+  }
+
+  @Bean
+  PresentationsController presentationsController() {
+    return new PresentationsController();
   }
 }

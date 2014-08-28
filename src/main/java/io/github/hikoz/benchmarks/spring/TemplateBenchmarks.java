@@ -1,11 +1,8 @@
 package io.github.hikoz.benchmarks.spring;
 
-import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
-
 import java.util.concurrent.TimeUnit;
+
+import javax.servlet.ServletException;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -21,23 +18,22 @@ import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 import org.springframework.core.io.FileSystemResourceLoader;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-
-import com.jeroenreijn.examples.App;
+import org.springframework.web.servlet.DispatcherServlet;
 
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(value = 1, jvmArgsAppend = { "-Xmx2048m", "-server",
     "-XX:+AggressiveOpts" })
-@Warmup(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 8, time = 8, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
 @Threads(30)
 public class TemplateBenchmarks {
-  MockMvc mockMvc;
-
   @Param({
       "string",
       "handlebars",
@@ -59,29 +55,22 @@ public class TemplateBenchmarks {
   String engine;
   private AnnotationConfigWebApplicationContext context;
 
-  boolean render(final String name) throws Exception {
-    String expected = "<h3 class=\"panel-title\">Shootout! Template engines on the JVM - Jeroen Reijn</h3>";
-    mockMvc
-        .perform(get("/" + name))
-        .andExpect(
-            header().string("Content-Type", "text/html;charset=UTF-8"))
-        .andExpect(status().isOk())
-        .andExpect(content().string(containsString("<h1>こんにちは")))
-        .andExpect(content().string(containsString(expected)));
-    return true;
-  }
+  private DispatcherServlet servlet;
+
+  private MockServletContext servletContext;
 
   @Setup
-  public void setup() {
+  public void setup() throws ServletException {
     System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "WARN");
 
     context = new AnnotationConfigWebApplicationContext();
     context.register(App.class);
-    MockServletContext sc = new MockServletContext("src/main/webapp",
+    servletContext = new MockServletContext("src/main/webapp",
         new FileSystemResourceLoader());
-    context.setServletContext(sc);
+    context.setServletContext(servletContext);
     context.refresh();
-    mockMvc = webAppContextSetup(context).build();
+    servlet = new DispatcherServlet(context);
+    servlet.init(new MockServletConfig(servletContext));
   }
 
   @TearDown
@@ -90,8 +79,10 @@ public class TemplateBenchmarks {
   }
 
   @Benchmark
-  public boolean templateBench() throws Exception {
-    return render(engine);
+  public MockHttpServletResponse templateBench() throws Exception {
+    MockHttpServletResponse res = new MockHttpServletResponse();
+    servlet.service(new MockHttpServletRequest(servletContext, "GET", "/" + engine), res);
+    return res;
   }
 
 }

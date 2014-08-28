@@ -5,7 +5,6 @@ import io.github.hikoz.benchmarks.steb.StebLoader;
 
 import java.util.Map;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.jeroenreijn.examples.model.Presentation;
 
@@ -19,24 +18,25 @@ public class StringSteb implements Steb {
   @SuppressWarnings("unchecked")
   public StebTemplate template(String viewName) throws Exception {
     return (w, model) -> {
-      StringBuilder b = new StringBuilder(10000);
-      b.append("<title>").append(loader.message("example.title")).append("</title>");
-      b.append("<h1>").append(loader.message("example.title")).append("</h1>");
+      w.write("<title>");
+      w.write(loader.message("example.title"));
+      w.write("</title>");
+      w.write("<h1>");
+      w.write(loader.message("example.title"));
+      w.write("</h1>");
       for (Presentation p : (Iterable<Presentation>) model.get("presentations")) {
-        b.append("<h3 class=\"panel-title\">")
-            .append(p.getTitle())
-            .append(" - ")
-            .append(p.getSpeakerName())
-            .append("</h3><div class=\"panel-body\">")
-            .append(p.getSummary())
-            .append("</div");
+        w.write("<h3 class=\"panel-title\">");
+        w.write(p.getTitle());
+        w.write(" - ");
+        w.write(p.getSpeakerName());
+        w.write("</h3><div class=\"panel-body\">");
+        w.write(p.getSummary());
+        w.write("</div");
       }
-      w.write(b.toString());
     };
   }
 
   public Map<String, ?> attributes() {
-    return ImmutableMap.of("i18n",
-        (Function<String, String>) (key) -> loader.message(key));
+    return ImmutableMap.of();
   }
 }

@@ -4,11 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.springframework.stereotype.Repository;
-
 import com.jeroenreijn.examples.model.Presentation;
 
-@Repository
 public class InMemoryPresentationsRepository implements PresentationsRepository {
 
     private static AtomicLong counter = new AtomicLong();
@@ -93,10 +90,4 @@ public class InMemoryPresentationsRepository implements PresentationsRepository 
     public Iterable<Presentation> findAll() {
         return this.presentations.values();
     }
-
-    @Override
-    public Presentation findPresentation(Long id) {
-        return this.presentations.get(id);
-    }
-
 }

@@ -6,6 +6,4 @@ public interface PresentationsRepository {
 
     Iterable<Presentation> findAll();
 
-    Presentation findPresentation(Long id);
-
 }
