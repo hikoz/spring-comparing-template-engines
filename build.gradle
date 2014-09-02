@@ -41,8 +41,8 @@ dependencies {
     compile 'com.lyncode:jtwig-spring:2.1.7'
     compile 'com.mitchellbosecke:pebble-spring3:1.0.0'
 
-    compile 'org.openjdk.jmh:jmh-core:0.9.7'
-    compile 'org.openjdk.jmh:jmh-generator-annprocess:0.9.7'
+    compile 'org.openjdk.jmh:jmh-core:1.0'
+    compile 'org.openjdk.jmh:jmh-generator-annprocess:1.0'
 
 }
 
