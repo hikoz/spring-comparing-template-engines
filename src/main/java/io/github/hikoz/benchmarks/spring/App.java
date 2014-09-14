@@ -9,9 +9,11 @@ import io.github.hikoz.benchmarks.templates.JadeSteb;
 import io.github.hikoz.benchmarks.templates.JmustacheSteb;
 import io.github.hikoz.benchmarks.templates.MustacheJavaSteb;
 import io.github.hikoz.benchmarks.templates.PebbleSteb;
+import io.github.hikoz.benchmarks.templates.RythmSteb;
 import io.github.hikoz.benchmarks.templates.ScalateSteb;
 import io.github.hikoz.benchmarks.templates.StringSteb;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -220,6 +222,14 @@ public class App {
     RythmViewResolver r = new RythmViewResolver();
     r.setContentType(CONTENT_TYPE);
     r.setViewNames(new String[] { "*-rythm" });
+    return r;
+  }
+
+  @Bean
+  public StebViewResolver rythmViewResolverSteb() throws IOException {
+    StebLoader stebLoader = new StebLoader(ac, "/WEB-INF/rythm/*.html");
+    StebViewResolver r = new StebViewResolver(new RythmSteb(stebLoader));
+    r.setViewNames(new String[] { "*-rythm-steb" });
     return r;
   }
 

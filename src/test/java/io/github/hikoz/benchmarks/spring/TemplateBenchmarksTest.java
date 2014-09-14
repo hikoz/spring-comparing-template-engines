@@ -21,8 +21,8 @@ public class TemplateBenchmarksTest {
       assertThat(res.getStatus(), is(200));
       assertThat(res.getHeader("Content-Type"), is("text/html;charset=UTF-8"));
       String c = res.getContentAsString();
-      assertThat(c, containsString("<h1>こんにちは"));
-      assertThat(c, containsString("<h3 class=\"panel-title\">"
+      assertThat(engine, c, containsString("<h1>こんにちは"));
+      assertThat(engine, c, containsString("<h3 class=\"panel-title\">"
           + "Shootout! Template engines on the JVM - Jeroen Reijn</h3>"));
     }
     target.teardown();

@@ -32,13 +32,14 @@ import org.springframework.web.servlet.DispatcherServlet;
     "-XX:+AggressiveOpts" })
 @Warmup(iterations = 8, time = 8, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
-@Threads(30)
+@Threads(200)
 public class TemplateBenchmarks {
   @Param({
       "string",
       "handlebars",
       "handlebars-steb",
       "rythm",
+      "rythm-steb",
       "thymeleaf",
       "mustache",
       "jmustache",
