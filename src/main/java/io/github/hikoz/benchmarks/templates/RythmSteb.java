@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableMap;
 import com.jeroenreijn.examples.model.Presentation;
 
 public class RythmSteb implements Steb {
-
   private RythmEngine engine;
   private StebLoader loader;
 
@@ -55,9 +54,9 @@ public class RythmSteb implements Steb {
 
   @Override
   public StebTemplate template(String viewName) throws Exception {
-    String path = loader.getFilePath(viewName);
+    File file = new File(loader.getFilePath(viewName));
     // not work. engine.render(w, path, m);
-    return (w, m) -> w.write(engine.render(path, m));
+    return (w, m) -> w.write(engine.render(file, m));
   }
 
   @Override

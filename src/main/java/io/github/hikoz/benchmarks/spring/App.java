@@ -31,7 +31,6 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
@@ -61,7 +60,6 @@ import de.neuland.jade4j.spring.template.SpringTemplateLoader;
 import de.neuland.jade4j.spring.view.JadeViewResolver;
 
 @Configuration
-@EnableWebMvc
 public class App {
   private static final String UTF8 = "UTF-8";
   String CONTENT_TYPE = "text/html;charset=" + UTF8;

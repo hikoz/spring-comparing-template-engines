@@ -1,7 +1,6 @@
 package io.github.hikoz.benchmarks.spring;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.lang.reflect.Field;
 
@@ -18,12 +17,12 @@ public class TemplateBenchmarksTest {
     for (String engine : field.getAnnotation(Param.class).value()) {
       target.engine = engine;
       MockHttpServletResponse res = target.templateBench();
-      assertThat(res.getStatus(), is(200));
-      assertThat(res.getHeader("Content-Type"), is("text/html;charset=UTF-8"));
+      assertThat(res.getStatus()).isEqualTo(200);
+      assertThat(res.getHeader("Content-Type")).isEqualTo("text/html;charset=UTF-8");
       String c = res.getContentAsString();
-      assertThat(engine, c, containsString("<h1>こんにちは"));
-      assertThat(engine, c, containsString("<h3 class=\"panel-title\">"
-          + "Shootout! Template engines on the JVM - Jeroen Reijn</h3>"));
+      assertThat(c).contains("<h1>こんにちは");
+      assertThat(c).contains("<h3 class=\"panel-title\">"
+        + "Shootout! Template engines on the JVM - Jeroen Reijn</h3>");
     }
     target.teardown();
   }
